@@ -1,0 +1,77 @@
+name: 'CodeLogic Send Build Info'
+description: 'Send git build information from a GitHub workflow to your CodeLogic server.'
+
+branding:
+  icon: 'share-2'
+  color: 'blue'
+
+inputs:
+  codelogic_host:
+    description: 'The host address of the CodeLogic instance without the "/codelogic/ui/" part.'
+    required: true
+  agent_uuid:
+    description: 'The UUID of the Agent in CodeLogic.'
+    required: true
+  agent_password:
+    description: 'The password for the agent.'
+    required: true
+  scan_path:
+    description: 'Absolute path to the Git repository root inside the container. Must start with /github/workspace for typical workflows.'
+    default: '/github/workspace'
+    required: false
+  pipeline_system:
+    description: 'The CI/CD pipeline system name reported to CodeLogic (e.g. GitHub Actions, Jenkins).'
+    default: 'GitHub Actions'
+    required: false
+  job_name:
+    description: 'The job or workflow name reported to CodeLogic (e.g. ${{ github.workflow }}).'
+    required: false
+  build_number:
+    description: 'The build number reported to CodeLogic (e.g. ${{ github.run_number }}).'
+    required: false
+  build_status:
+    description: 'The build status reported to CodeLogic (e.g. ${{ job.status }}).'
+    required: false
+  log_file:
+    description: 'Absolute path to a build log file inside the container (e.g. /github/workspace/build.log).'
+    required: false
+  log_lines:
+    description: 'Number of trailing lines to send from the log file (min 5, max 50000). Only used when log_file is set.'
+    required: false
+  timeout:
+    description: 'Timeout for network operations in seconds (min 5, max 300).'
+    required: false
+  dry_run:
+    description: 'Print planned work without executing.'
+    default: 'false'
+    required: false
+  cleanup_temp_files:
+    description: 'Delete temporary files after successful completion or on exit.'
+    default: 'false'
+    required: false
+  verbose:
+    description: 'Run with extra logging.'
+    default: 'false'
+    required: false
+
+runs:
+  using: 'docker'
+  image: docker://public.ecr.aws/codelogic.com/codelogic_send-build-info:latest
+  args: [
+    "send_build_info",
+    "--path=${{ inputs.scan_path }}",
+    "--pipeline-system=${{ inputs.pipeline_system }}",
+    "${{ inputs.job_name != '' && format('--job-name={0}', inputs.job_name) || '' }}",
+    "${{ inputs.build_number != '' && format('--build-number={0}', inputs.build_number) || '' }}",
+    "${{ inputs.build_status != '' && format('--build-status={0}', inputs.build_status) || '' }}",
+    "${{ inputs.log_file != '' && format('--log-file={0}', inputs.log_file) || '' }}",
+    "${{ inputs.log_lines != '' && format('--log-lines={0}', inputs.log_lines) || '' }}",
+    "${{ inputs.timeout != '' && format('--timeout={0}', inputs.timeout) || '' }}",
+    "${{ inputs.dry_run == 'true' && '--dry-run' || '' }}",
+    "${{ inputs.cleanup_temp_files == 'true' && '--cleanup-temp-files' || '' }}",
+    "${{ inputs.verbose == 'true' && '--verbose' || '' }}"
+  ]
+  env:
+    CODELOGIC_HOST: ${{ inputs.codelogic_host }}
+    AGENT_UUID: ${{ inputs.agent_uuid }}
+    AGENT_PASSWORD: ${{ inputs.agent_password }}
