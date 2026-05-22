@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Send CodeLogic Build Info
-        uses: CodeLogicIncEngineering/codelogic-send-build-info-github-action@feature/CAPE-8816_create_github_action
+        uses: ./.github/actions/codelogic-send-build-info@feature/CAPE-8816_create_github_action
         with:
           codelogic_host: https://thingsboard.app.codelogic.com
           agent_uuid: 519802da-a504-4f36-b672-40c03ab474f4
