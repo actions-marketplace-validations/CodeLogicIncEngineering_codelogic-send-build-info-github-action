@@ -24,13 +24,13 @@ inputs:
     default: 'GitHub Actions'
     required: false
   job_name:
-    description: 'The job or workflow name reported to CodeLogic (e.g. ${{ github.workflow }}).'
+    description: 'The job or workflow name reported to CodeLogic (e.g. github.workflow).'
     required: false
   build_number:
-    description: 'The build number reported to CodeLogic (e.g. ${{ github.run_number }}).'
+    description: 'The build number reported to CodeLogic (e.g. github.run_number).'
     required: false
   build_status:
-    description: 'The build status reported to CodeLogic (e.g. ${{ job.status }}).'
+    description: 'The build status reported to CodeLogic (e.g. job.status).'
     required: false
   log_file:
     description: 'Absolute path to a build log file inside the container (e.g. /github/workspace/build.log).'
